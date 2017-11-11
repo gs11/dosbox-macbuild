@@ -4,6 +4,18 @@ set -e
 BUILD_DIR=`pwd`/`mktemp -d dosbox-build.XXX`
 COPYRIGHT_TEXT="Copyright 2002-`date +'%Y'` The DOSBox Team, compiled by $USER"
 
+if [ "$1" = "32" ]
+then
+	OPTIONS='--build=i386-apple-darwin CFLAGS="-arch i386 -O2 -pipe" CXXFLAGS="-arch i386 -O2 -pipe" LDFLAGS="-arch i386"'
+elif [ "$1" = "64" ]
+then
+	OPTIONS=""
+else
+	echo "Please specify the target architecture as either 32 or 64"
+	echo "Usage: buildDosbox.sh <architecture>"
+	exit
+fi
+
 cd $BUILD_DIR
 mkdir dependencies
 
@@ -32,7 +44,7 @@ cd $BUILD_DIR
 curl -LOs https://www.libsdl.org/release/SDL-1.2.15.tar.gz
 tar xzpf SDL-1.2.15.tar.gz
 cd SDL-1.2.15
-./configure --prefix=$DEPENDENCIES_DIR --enable-static --disable-shared --disable-video-x11
+eval ./configure --prefix=$DEPENDENCIES_DIR --enable-static --disable-shared --disable-video-x11 $OPTIONS
 sed -i "" "/CGDirectPaletteRef palette;/d" src/video/quartz/SDL_QuartzVideo.h
 make
 make install
@@ -43,7 +55,7 @@ svn checkout svn://svn.code.sf.net/p/dosbox/code-0/dosbox/trunk dosbox-src
 cd dosbox-src
 DOSBOXVERSION=$(svn log | head -2 | awk '/^r/ { print $1 }')
 ./autogen.sh
-./configure --with-sdl-prefix=DEPENDENCIES_DIR
+eval ./configure --with-sdl-prefix=DEPENDENCIES_DIR $OPTIONS
 make
 mv src/dosbox $BUILD_DIR/dosbox
 cd $BUILD_DIR
@@ -66,3 +78,5 @@ rm -rf automake-1.15 automake-1.15.tar.gz
 rm -rf SDL-1.2.15 SDL-1.2.15.tar.gz
 rm -rf dependencies dosbox-src
 rm DOSBox-0.74-1.dmg
+
+echo "Successfully built DOSBox from SVN revision $DOSBOXVERSION $BUILD_DIR/DOSBox.app"
