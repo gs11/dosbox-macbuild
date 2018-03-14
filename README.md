@@ -17,4 +17,4 @@ Usage
 -----
 `buildDosbox.sh <architecture>`
 
-Architecture can either be 32 (32-bit) or 64 (64-bit)
+Architecture can either be 32 (32-bit) or 64 (64-bit) (_Please note that the 64-bit version is currently much slower than the 32-bit version_)
