@@ -1,9 +1,6 @@
 #!/bin/sh
 set -e
 
-BUILD_DIR=`pwd`/`mktemp -d dosbox-build.XXX`
-COPYRIGHT_TEXT="Copyright 2002-`date +'%Y'` The DOSBox Team, compiled by $USER"
-
 if [ "$1" = "32" ]
 then
 	OPTIONS='--build=i386-apple-darwin CFLAGS="-arch i386 -O2 -pipe" CXXFLAGS="-arch i386 -O2 -pipe" LDFLAGS="-arch i386"'
@@ -15,6 +12,9 @@ else
 	echo "Usage: buildDosbox.sh <architecture>"
 	exit
 fi
+
+BUILD_DIR=`pwd`/`mktemp -d dosbox-build.XXX`
+COPYRIGHT_TEXT="Copyright 2002-`date +'%Y'` The DOSBox Team, compiled by $USER"
 
 cd $BUILD_DIR
 mkdir dependencies
